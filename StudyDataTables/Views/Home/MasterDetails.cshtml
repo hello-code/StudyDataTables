@@ -1,0 +1,249 @@
+﻿@{
+    ViewBag.Title = "MaterDetails";
+}
+<h2>MaterDetails</h2>
+<div class="customButtons">
+    <input type="button" value="Add" id="add" class="btn btn-success operate" />
+    <input type="button" value="Edit" id="edit" class="btn btn-warning operate" />
+    <input type="button" value="Delete" id="delete" class="btn btn-danger operate" />
+</div>
+<table id="master" class="table table-bordered table-hover">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Category Name</th>
+        </tr>
+    </thead>
+    <tbody>
+        @*@foreach (var item in Model)
+            {
+                <tr>
+                    <td class="id" rel="@item.OrderId">@item.OrderId</td>
+                    <td>@item.OrderDate</td>
+                    <td>@item.CustomerId</td>
+                </tr>
+            }*@
+    </tbody>
+</table>
+<!--Master Modal -->
+<div class="modal" id="MasterModal" tabindex="-1" role="dialog" aria-labelledby="MasterModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="MasterModalLabel">Add New </h4>
+            </div>
+            <div class="modal-body">
+                <label>Category Name</label>
+                <input type="text" id="categoryName" />
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="mAdd">Save changes</button>
+                <button type="button" class="btn btn-warning" id="mEdit">Save changes</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<table id="detail" class="table table-bordered table-hover">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>ProductName</th>
+            <th>Category ID</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+@section scripts{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            // 当前选中行
+            var selected = "";
+
+            // 是否有选中行
+            function isSelect(oTable) {
+                var selectedRow = oTable.row('.row_selected').index();
+                //若为空数组则退出
+                if (selectedRow.length == 0) {
+                    //alert("请先选择要编辑的行");
+                    return false; //退出
+                }
+                return true;
+            }
+
+            $('#detail').hide(); //先隐藏子表
+
+            // 主表设置
+            var masterTable = $('#master').DataTable({
+                'serverSide': true,
+                'processing': true,
+                'ajax': {
+                    'url': "/Home/GetMasterData"
+                },
+                'columns': [
+                    { 'data': 'Id' },
+                    { 'data': 'Name' }
+                ],
+                /*设置哪些列不筛选-（linq遇到非string的数据会出错）
+                用字段名如targets：['Id']不行！*/
+                'columnDefs':[
+                    {'targets':[0],'searchable':false}
+                ],
+                //为了保持选中行高亮
+                "rowCallback": function (row, data, displayIndex) {
+                    // http://datatables.net/examples/server_side/select_rows.html
+                    if (data.Id == selected) {//直接对比值
+                        $(row).addClass('row_selected');
+                    }
+                }
+            });// end masterTable
+
+            // 子表选项设置
+            var detailsTableOpt = {
+                'serverSide': true,
+                'processing': true,
+                'ajax': {
+                    'url': '/Home/GetDetailsData',
+                    'data': function (d) {
+                        d.id = selected;
+                    }
+                    //====不能加这个success！！否则子表不会显示！！！
+                    //,'success': function (data) {
+                    //    alert('scccccc'+selected);
+                    //}
+                },
+                'destroy': true,
+                'columns': [
+                      { 'data': 'Id' },
+                      { 'data': 'ProductName' },
+                      { 'data': 'CategoryId' }
+                ]
+            };// end 子表选项设置
+
+            // 点击主表行刷新子表
+            $('#master tbody').on('click', 'tr', (function () {
+                $(this).toggleClass('row_selected');
+                masterTable.$('tr.row_selected').removeClass('row_selected');
+                $(this).addClass('row_selected');
+                selected = masterTable.row(this).data().Id;
+                $('#detail').show(); //显示子表
+                $('#detail').DataTable(detailsTableOpt).draw();
+            }));//end click
+
+            // 拖拽模态框-->BootstrapModalDrag.js
+            $('#MasterModal').drags({
+                handle: ".modal-header"
+            });
+
+            // 动态显示模态框
+            $('.operate').click(function () {
+                //showModal($(this));
+                var btnId = $(this).val();//value
+                if (btnId == "Add") {
+                    //hide edit button
+                    $('#mEdit').hide();
+                    $('#mAdd').show();
+                    //clear input
+                    $('#MasterModal input').val('');
+                    //show modal
+                    $('#MasterModal').modal('show');
+                    $('#MasterModalLabel').text('添加');
+                }
+                else if (btnId == "Edit") {
+                    if (isSelect(masterTable)) {
+                        $('#mEdit').show();
+                        $('#mAdd').hide();
+                        $('#MasterModal').modal('show');
+                        $('#MasterModalLabel').text('更改');
+                        loadSelectedRowData(masterTable);
+                    } else
+                        alert("请先选择要编辑的行");
+                }
+            });//end operate
+
+            // 载入选中行数据
+            function loadSelectedRowData(oTable) {
+                //根据高亮行的css找到行索引
+                var idx = oTable.row('.row_selected').index();
+                var id = oTable.row(idx).data().Id;
+                var name = oTable.row(idx).data().Name;
+                //给模态框赋值
+                $('#categoryName').val(name);
+                //alert('ok');
+            };
+
+            // 添加
+            $('#mAdd').click(function () {
+                var url = "/Home/Add";
+                var data = { categoryName: $('#categoryName').val() };
+                $.ajax({
+                    type: 'POST',
+                    url: url,
+                    data: data,
+                    success: function (d) {
+                        if (d.msg == "success") {
+                            $('#MasterModal').modal('hide');//关闭模态框
+                            masterTable.draw();
+                            alert('Add ok');
+                            return false;
+                        }
+                        alert("Something went wrong. Please retry!" + d.msg);
+                    }
+                });
+            });//end add
+
+            // 删除
+            $('#delete').click(function () {
+                var selectedRow = masterTable.row('.row_selected').index();
+                //若为空则退出
+                if (selectedRow.length == 0) {
+                    alert("请先选择要删除的行");
+                    return;//退出
+                }
+                if (window.confirm("are you sure?")) {
+                    var url = "/Home/Delete";
+                    var pk = masterTable.row(selectedRow).data().Id;
+                    var data = { Id: pk };
+                    $.ajax({
+                        type: 'POST',
+                        url: url,
+                        data: data,
+                        success: function (d) {
+                            if (d.msg == "success") {
+                                masterTable.row('.row_selected').remove().draw(false);//false--刷新后不会回到第一页
+                                alert("已删除。")
+                                return false;
+                            }
+                            alert("Something went wrong. Please retry!" + d.msg);
+                        }
+                    });
+                }
+                else {
+                    return false;// quit
+                }//end if else
+            });//end delete
+
+            // 更改
+            $('#mEdit').click(function () {
+                //get primary key
+                var idx = masterTable.row('.row_selected').index();
+                var pk = masterTable.row(idx).data().Id;
+                var url = "/Home/Edit";
+                var data = {
+                    Id: pk,
+                    Name: $('#categoryName').val()
+                };
+                $.post(url, data, function (d) {
+                    if (d.msg == "success") {
+                        masterTable.draw();
+                        alert("updated!");
+                        $('#MasterModal').modal('hide');
+                        return false;
+                    }
+                    alert("Something went wrong. Please retry!" + data.msg);
+                })
+            });//end edit
+        });//end ready
+    </script>
+}

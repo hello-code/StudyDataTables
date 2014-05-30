@@ -1,0 +1,40 @@
+﻿@model IEnumerable<StudyDataTables.Models.Category>
+
+@{
+    ViewBag.Title = "Index";
+}
+<br />
+<p>
+    @Html.ActionLink("Master-Details", "MasterDetails")
+</p>
+<br />
+<table class="table" id="myTable">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                   @Html.DisplayFor(modelItem=>item.Id)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+@section scripts{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var table = $('#myTable').DataTable();
+        });
+    </script>
+}
