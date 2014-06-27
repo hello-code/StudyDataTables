@@ -70,14 +70,6 @@ namespace DataTables.Mvc
             return Data
                 .Where(_column => !String.IsNullOrWhiteSpace(_column.Data) && _column.Searchable && !String.IsNullOrWhiteSpace(_column.Search.Value));
         }
-
-        public IEnumerable<Column> GetSearchableColumns()
-        {
-            return Data
-               .Where(_column => !String.IsNullOrWhiteSpace(_column.Data) && _column.Searchable);
-
-        }
-
         /// <summary>
         /// Returns the enumerable element as defined on IEnumerable.
         /// </summary>

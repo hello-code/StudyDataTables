@@ -1,0 +1,27 @@
+﻿@model IEnumerable<StudyDataTables.Models.OrderItem>
+
+<table id="detail" class="table table-bordered table-hover">
+    <thead>
+        <tr>
+            <th>Seq</th>
+            <th>ProductId</th>
+            <th>Qty</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Seq)
+                </td>
+                <td width="100px">
+                    <a href="#" class="productLink">@item.ProductId</a>
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Qty)
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

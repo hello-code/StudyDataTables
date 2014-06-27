@@ -7,8 +7,9 @@
     <link href="~/Content/Site.css" rel="stylesheet" type="text/css" />
     <link href="~/Content/bootstrap.min.css" rel="stylesheet" type="text/css" />
     <script src="~/Scripts/modernizr-2.6.2.js"></script>
-    
+
     <link href="~/Content/jquery.dataTables.min.css" rel="stylesheet" />
+    <link href="http://cdn.datatables.net/colreorder/1.1.1/css/dataTables.colReorder.css" rel="stylesheet" />
 </head>
 <body>
     <div class="navbar navbar-inverse navbar-fixed-top">
@@ -22,8 +23,7 @@
                 @Html.ActionLink("Application name", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
             </div>
             <div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav">
-                </ul>
+                <ul class="nav navbar-nav"></ul>
             </div>
         </div>
     </div>
@@ -41,6 +41,9 @@
 
     <script src="~/Scripts/jquery.dataTables.min.js"></script>
     <script src="~/Scripts/BootstrapModalDrag.js"></script><!--使Bootstrap Modal可拖拽 https://github.com/jschr/bootstrap-modal/issues/39-->
+    @*<script src="http://cdn.datatables.net/colreorder/1.1.1/js/dataTables.colReorder.min.js"></script>*@
+    <script src="~/Scripts/ColReorderWithResize.js"></script><!--拖拽字段和调整列宽-->
+
     @RenderSection("scripts", false)
 </body>
 </html>

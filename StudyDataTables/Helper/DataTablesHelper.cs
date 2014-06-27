@@ -22,7 +22,8 @@ namespace Helper
             if (!string.IsNullOrEmpty(param.Search.Value))
             {
                 string globalSearch = param.Search.Value;
-                var filteredColumns = param.Columns.GetSearchableColumns();
+                //var filteredColumns = param.Columns.GetSearchableColumns();
+                var filteredColumns = param.Columns.GetFilteredColumns();
                 if (!string.IsNullOrEmpty(globalSearch))
                 {
                     IQueryable<T> temp = null;

@@ -62,7 +62,7 @@ namespace StudyDataTables.Controllers
                     }
                     catch (Exception ex)
                     {
-                        return Json(new { msg = "操作失败！" + ex.Message });
+                        return Json(new { msg = "Fail！" + ex.Message });
                     }
                 }
                 return Content("");
@@ -83,7 +83,7 @@ namespace StudyDataTables.Controllers
                 }
                 catch (Exception ex)
                 {
-                    return Json(new { msg = "操作失败！" + ex.Message });
+                    return Json(new { msg = "Fail！" + ex.Message });
                 }
             }
         }
@@ -105,13 +105,28 @@ namespace StudyDataTables.Controllers
                     }
                     catch (Exception ex)
                     {
-                        return Json(new { msg = "操作失败！" + ex.Message });
+                        return Json(new { msg = "Fail！" + ex.Message });
                     }
                 }
                 return Content("");
             }
         }
 
-        // TODO:显示subGrid
+        // Show subGrid
+        public ActionResult SubGrid()
+        {
+            using (EntityContext db=new EntityContext())
+            {
+                return View(db.Category.ToList());
+            }
+        }
+        public ActionResult SubGridDetail(int id)
+        {
+            using (EntityContext db=new EntityContext())
+            {
+                var model = db.Product.Where(i => i.CategoryId.Equals(id));
+                return PartialView(model.ToList());
+            }
+        }
     }
 }

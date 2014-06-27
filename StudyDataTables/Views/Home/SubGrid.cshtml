@@ -1,0 +1,72 @@
+﻿@model IEnumerable<StudyDataTables.Models.Category>
+
+@{
+    ViewBag.Title = "SubGrid";
+}
+
+<h2>SubGrid(Use partial view)</h2>
+
+<table id="myTable" class="table table-bordered table-hover">
+    <thead>
+        <tr>
+            <th></th>
+            <th>Id</th>
+            <th>Category Name</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    <img class="expand" src="@Url.Content("~/Content/open.png")" rel="@item.Id" />
+                </td>
+                <td>@item.Id</td>
+                <td>@item.Name</td>
+            </tr>
+        }
+    </tbody>
+</table>
+@section scripts{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var table = $('#myTable').DataTable({
+                "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+                'dom': 'Rlfrtip',
+                'autoWith': false
+            });
+
+            $('#myTable tbody').on('click', 'td img.expand', function () {
+                var tr = $(this).parents('tr');
+                var row = table.row(tr);
+                // if is shown then close
+                if (row.child.isShown()) {
+                    this.src = "@Url.Content("~/Content/open.png")";
+                    row.child.hide();
+                }
+                    // if closed then show
+                else {
+                    this.src = "@Url.Content("~/Content/close.png")";
+                    var url = "@Url.Action("SubGridDetail", "Home")";
+                    var categoryId = $(this).attr("rel");
+                    $.get(
+                        url,
+                        { id: categoryId },
+                        function (details) {
+                            row.child(details).show();
+                            // let detail table use DataTables
+                            $('#detail').DataTable({
+                                'dom': 'Rlftrip'
+                            });
+                        });
+                }
+            });// end on click
+
+            $("#myTable").on('click', 'a.productLink', function () {
+                var product = $(this).text();
+                alert(product);
+            });
+
+        });// end ready
+    </script>
+}
