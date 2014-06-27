@@ -1,0 +1,143 @@
+﻿@model IEnumerable<StudyDataTables.Models.Product>
+
+@{
+    ViewBag.Title = "Checkbox";
+}
+
+<h2>Checkbox</h2>
+<button id="delete" class="btn btn-danger">Delete Selected Rows</button>
+<table id="myTable" class="table table-bordered ">
+    <thead>
+        <tr>
+            <th><input type="checkbox" name="checkAll" title="Select All" /></th>
+            <th>Id</th>
+            <th>Category Name</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+@section scripts{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var table = $('#myTable').DataTable({
+                'serverSide': true,
+                'processing': true,
+                "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+                'dom': 'Rlfrtip',
+                'autoWith': false,
+                'ajax': {
+                    'url': '/Home/GetMasterData',
+                    'type': 'POST',
+                    'dataType': 'json',
+                    'data': function (d) {
+                        // TODO:传值
+                    }
+                },
+                'columns': [
+                     {
+                         'data': 'Id',
+                         'width': '20px',
+                         'orderable': false,
+                         'render': function (data, type, full) {
+                             return '<input type="checkbox" class="chk" value="' + data + '"/>';
+                         },
+                         'className': "center"
+                     },
+                     { 'data': 'Id' },
+                     { 'data': 'Name' }
+                ],
+                'columnDefs': [// 不筛选数字列
+                    {
+                        'targets': [0, 1],
+                        'searchable':false
+                    }
+                ],
+                'drawCallback': function (settings) {
+                    $('input[name="checkAll"]').prop('checked', false);
+                }
+            });// end dataTable
+
+            // 点击每行的复选框
+            $('#myTable tbody').on('click', '.chk', (function () {
+                // 根据复选框选中与否添加背景色
+                if ($(this).prop('checked') == true) {
+                    $(this).parents('tr').addClass('row_selected');
+                } else {
+                    $(this).parents('tr').removeClass('row_selected');
+
+                }
+            }));
+
+            // 全选|不选
+            $('input[name="checkAll"]').click(function () {
+                // 切换全选和不选
+                $(':checkbox').prop('checked', this.checked);
+
+                // 改变选中和不选的背景色
+                if ($('input[name="checkAll"]').prop('checked') == false) {
+                    $('#myTable tr:gt(0)').removeClass('row_selected');
+                } else {
+                    $('#myTable tr:gt(0)').addClass('row_selected');
+                }
+            })
+
+            // 获得复选框的值(id)
+            function getChecked() {
+                var array = new Array();
+                var sReturn = "";
+                var checkboxes = $('#myTable tr:gt(0) :checkbox:checked');
+
+                checkboxes.each(function () {
+                    array.push($(this).val());
+                })
+
+                // 把数组转为字符串
+                var n = checkboxes.length; // 选中了几个checkbox
+                for (var i = 0; i < n; i++) {
+                    if (sReturn == "") {
+                        sReturn = array[i];
+                    } else {
+                        sReturn = sReturn + "," + array[i];
+                    }
+                }
+                return sReturn;
+            };
+
+            // 删除操作
+            $("#delete").click(function () {
+                var checkboxes = $('#myTable tr:gt(0) :checkbox:checked').length;
+                if (checkboxes == 0) {
+                    alert("Please select item");
+                    return false;
+                }
+                if (!window.confirm("确定要删除吗？删除后将不能恢复！Are you sure delete selected?"))
+                    return false;
+                var ids = getChecked();
+                $.ajax({
+                    type: "POST",
+                    url: "/Home/BatchDelete",
+                    data: { "ids": ids },// 1,2,3
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.msg == "success") {
+                            alert("删除成功！success!");
+                            // 恢复全选框为空
+                            $('input[name="checkAll"]').prop('checked', false);
+                            //$(':checkbox:checked').parents('tr').remove(); // 看着行减少
+                            table.row(':checkbox:checked').remove().draw(false);
+                        }
+                        else {
+                            alert(data.msg);
+                        }
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        alert(xhr.status);
+                        alert(thrownError);
+                        table.draw();
+                    }
+                });
+            });
+        });// end ready
+    </script>
+}

@@ -16,3 +16,7 @@ textarea {
     max-width: 280px;
 }
 
+/* row highlight*/
+.row_selected{
+    background-color:#E3E3E3 !important;
+}

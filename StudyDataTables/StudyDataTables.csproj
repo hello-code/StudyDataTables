@@ -144,7 +144,6 @@
     <Compile Include="Helper\DataTables\IDataTablesRequest.cs" />
     <Compile Include="Helper\DataTables\NameValueCollectionExtensions.cs" />
     <Compile Include="Helper\DataTables\Search.cs" />
-    <Compile Include="Helper\LinqExtensions.cs" />
     <Compile Include="Models\Entity.cs" />
     <Compile Include="Models\EntityContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -159,6 +158,7 @@
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
     <Content Include="Views\Home\SubGrid.cshtml" />
     <Content Include="Views\Home\SubGridDetail.cshtml" />
+    <Content Include="Views\Home\Checkbox.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

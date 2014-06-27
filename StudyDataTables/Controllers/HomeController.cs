@@ -128,5 +128,38 @@ namespace StudyDataTables.Controllers
                 return PartialView(model.ToList());
             }
         }
-    }
+
+        // Checkbox
+        public ActionResult Checkbox()
+        {
+            using (EntityContext db = new EntityContext())
+            {
+                return View(db.Product.ToList());
+            }
+        }
+
+        // Batch Delete(use checkbox)
+        public ActionResult BatchDelete(string ids)
+        {
+            using (var db = new EntityContext())
+            {
+                try
+                {
+                    var myIds=ids.Split(',').Select(x => Int32.Parse(x));
+                    var query=from c in db.Category
+                              where myIds.Contains(c.Id)
+                              select c;
+
+                    db.Category.RemoveRange(query);
+                    db.SaveChanges();
+                    return Json(new { msg = "success" });
+
+                }
+                catch (Exception ex)
+                {
+                    return Json(new { msg = "Fail！" + ex.Message });
+                }
+            }
+        }
+    }// end  HomeController
 }

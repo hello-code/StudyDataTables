@@ -70,6 +70,15 @@ namespace DataTables.Mvc
             return Data
                 .Where(_column => !String.IsNullOrWhiteSpace(_column.Data) && _column.Searchable && !String.IsNullOrWhiteSpace(_column.Search.Value));
         }
+
+        /// <summary>
+        /// Get which enable search field 哪些字段是可以search的
+        /// </summary>
+        /// <returns>The enumeration of searchable columns</returns>
+        public IEnumerable<Column> GetSearchableColumns()
+        {
+            return Data.Where(_column => !String.IsNullOrWhiteSpace(_column.Data) && _column.Searchable);
+        }
         /// <summary>
         /// Returns the enumerable element as defined on IEnumerable.
         /// </summary>
