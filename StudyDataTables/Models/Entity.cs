@@ -37,6 +37,5 @@ namespace StudyDataTables.Models
         public string Name { get; set; }
         [JsonIgnore]
         public virtual ICollection<Product> Product { get; set; }
-
-    }
+    } 
 }
