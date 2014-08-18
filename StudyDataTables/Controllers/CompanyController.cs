@@ -1,4 +1,6 @@
-﻿using StudyDataTables.Models;
+﻿using DataTables.Mvc;
+using Helper;
+using StudyDataTables.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -117,5 +119,40 @@ namespace StudyDataTables.Controllers
 
             return View(CompanyData);
         }
+
+        public ActionResult Customization()
+        {
+            return View();
+        }
+        public string GetData([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest param)
+        {
+            using (EntityContext db = new EntityContext())
+            {
+
+                IQueryable<Company> company = db.Company;
+                var count = company.Count();
+                return DataTablesHelper.GetQuery(param, count, company);
+            }
+        }
+        public string DeleteData(int id)
+        {
+            using (EntityContext db = new EntityContext())
+            {
+                try
+                {
+                    var company = db.Company.FirstOrDefault(c => c.ID == id);
+                    if (company == null)
+                        return "Company cannot be found";
+                    db.Company.Remove(company);
+                    return "ok";
+                }
+                catch (Exception ex)
+                {
+                    return ex.Message;
+                }
+            }
+        }
+
+
     }
 }

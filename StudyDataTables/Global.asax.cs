@@ -13,6 +13,9 @@ namespace StudyDataTables
         {
             AreaRegistration.RegisterAllAreas();
             RouteConfig.RegisterRoutes(RouteTable.Routes);
+
+            //禁用自动迁移
+            System.Data.Entity.Database.SetInitializer<Models.EntityContext>(null);
         }
     }
 }

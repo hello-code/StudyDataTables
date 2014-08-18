@@ -40,11 +40,16 @@
         </table>
         @*<div class="add_delete_toolbar" />*@
     </div>
-
+    @*<button id="btnAddNewCompany" value="Ok">Add new company...</button>
+    <button id="btnDeleteCompany" value="cancel">Delete selected company</button>*@
 
     <script type="text/javascript">
         $(document).ready(function () {
             var table = $('#myTable').dataTable().makeEditable();
+            //var table = $('#myTable').dataTable().makeEditable({
+            //    sDeleteURL: "/Company/DeleteData",
+            //    sDeleteRowButtonId: "btnDeleteCompany"
+            //});
         });
     </script>
 

@@ -163,6 +163,7 @@
     <Content Include="Views\Home\SubGridDetail.cshtml" />
     <Content Include="Views\Home\Checkbox.cshtml" />
     <Content Include="Views\Company\Index.cshtml" />
+    <Content Include="Views\Company\Customization.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
